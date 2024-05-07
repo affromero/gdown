@@ -122,6 +122,10 @@ def main():
         "--user-agent",
         help="User-Agent to use for downloading file.",
     )
+    parser.add_argument(
+        "--pattern",
+        help="Pattern to filter files in folder.",
+    )
 
     args = parser.parse_args()
 
@@ -158,6 +162,7 @@ def main():
                 verify=not args.no_check_certificate,
                 remaining_ok=args.remaining_ok,
                 user_agent=args.user_agent,
+                pattern=args.pattern,
             )
         else:
             download(
