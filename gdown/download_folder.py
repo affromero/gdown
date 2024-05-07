@@ -6,7 +6,7 @@ import os.path as osp
 import re
 import sys
 import warnings
-from typing import List
+from typing import List, Optional
 from typing import Union
 
 import bs4
@@ -99,6 +99,7 @@ def _download_and_parse_google_drive_link(
     quiet=False,
     remaining_ok=False,
     verify=True,
+    pattern=None,
 ):
     """Get folder structure of Google Drive folder URL."""
 
@@ -138,6 +139,16 @@ def _download_and_parse_google_drive_link(
                     child_id,
                     child_name,
                 )
+            if pattern is not None and re.search(pattern, child_name) is None:
+                if not quiet:
+                    print(
+                        "File",
+                        child_id,
+                        child_name,
+                        "does not match the pattern",
+                        pattern,
+                    )
+                continue
             gdrive_file.children.append(
                 _GoogleDriveFile(
                     id=child_id,
@@ -160,6 +171,7 @@ def _download_and_parse_google_drive_link(
             url="https://drive.google.com/drive/folders/" + child_id,
             quiet=quiet,
             remaining_ok=remaining_ok,
+            pattern=pattern,
         )
         if not return_code:
             return return_code, None
@@ -210,6 +222,7 @@ def download_folder(
     user_agent=None,
     skip_download: bool = False,
     resume=False,
+    pattern: Optional[str] = None,
 ) -> Union[List[str], List[GoogleDriveFileToDownload], None]:
     """Downloads entire folder from URL.
 
@@ -245,6 +258,9 @@ def download_folder(
         Completed output files will be skipped.
         Partial tempfiles will be reused, if the transfer is incomplete.
         Default is False.
+    pattern: str, optional
+        Regular expression pattern to match files to download.
+        Defaults to None.
 
     Returns
     -------
@@ -278,6 +294,7 @@ def download_folder(
         quiet=quiet,
         remaining_ok=remaining_ok,
         verify=verify,
+        pattern=pattern,
     )
     if not is_success:
         print("Failed to retrieve folder contents", file=sys.stderr)
