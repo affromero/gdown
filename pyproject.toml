@@ -37,7 +37,8 @@ dependencies = [
   "tqdm",
   "beautifulsoup4",
 ]
-dynamic = ["readme", "version"]
+readme = "README.md"
+version = "5.2.0"
 
 [project.optional-dependencies]
 test = [
@@ -60,8 +61,6 @@ fragments = [
   { path = "README.md" },
 ]
 
-[tool.hatch.version]
-source = "vcs"
 
 [project.scripts]
 gdown = "gdown.__main__:main"
